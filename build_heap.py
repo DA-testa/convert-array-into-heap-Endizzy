@@ -1,42 +1,109 @@
 # python3
+# Nikita Smirnovs 221RDB433
+import threading
 
 
-def build_heap(data):
-    swaps = []
-    # TODO: Creat heap and heap sort
-    # try to achieve  O(n) and not O(n2)
 
 
-    return swaps
+
+class MinHeap:
+    def swap_operation(self,iter,smallest_num,elem):
+        self.swaps.append((iter, smallest_num))
+        self.array[iter], self.array[smallest_num] = self.array[smallest_num], self.array[iter]
+        self.heap_iter(smallest_num, elem)
+
+    def __init__(self, array):
+        self.array = array
+        self.swaps = []
+        self.build_heap()
+
+    def build_heap(self):
+        elem = len(self.array)
+        for i in range(n // 2 - 1, -1, -1):
+            self.heap_iter(i, elem)
+
+    def heap_iter(self, iter, elem):
+        smallest_num = iter
+        left_leaf = 2 * iter + 1
+        right_leaf = 2 * iter + 2
+        smallest_num = self.left_leaf_condition(left_leaf, elem,smallest_num)
+        smallest_num = self.right_leaf_condition(right_leaf,elem,smallest_num)
+        self.check_smallest_value(smallest_num,iter,elem)
+
+    def print_swaps(self):
+        print(len(self.swaps))
+        for x in self.swaps:
+            print(*x)
+
+    def left_leaf_condition(self,left_leaf, elem, smallest_num):
+        if left_leaf < elem and self.array[left_leaf] < self.array[smallest_num]:
+            return left_leaf
+        return smallest_num
+
+    def right_leaf_condition(self,right_leaf,elem,smallest_num):
+        if right_leaf < elem and self.array[right_leaf] < self.array[smallest_num]:
+            return right_leaf
+        return smallest_num
+        
+    def check_smallest_value(self,smallest_num,iter, elem):
+        if smallest_num != iter:
+            self.swap_operation(iter,smallest_num,elem)
 
 
-def main():
+
+class Node:
+    def __init__(self, value):
+        self.value = value
     
-    # TODO : add input and corresponding checks
-    # add another input for I or F 
-    # first two tests are from keyboard, third test is from a file
+    def __repr__(self) -> str:
+        return f"{self.value}"
+
+    
+def check_answer(filename, swaps_func):
+    with open("tests/" + filename + ".a", "r") as file:
+        n = int(file.readline())
+        array = file.readlines()
+    print(array)
+
+    fil = [list(map(int,element[:-2].strip().split(" "))) for element in array ]
+    # print(fil)
+    return swaps_func == fil
 
 
-    # input from keyboard
-    n = int(input())
-    data = list(map(int, input().split()))
+def open_file(filename):
+    with open("tests/" + filename, "r") as file:
+        n = int(file.readline())
+        array = list(map(int, file.readline().split()))
 
-    # checks if lenght of data is the same as the said lenght
-    assert len(data) == n
+    return n, array
 
-    # calls function to assess the data 
-    # and give back all swaps
-    swaps = build_heap(data)
-
-    # TODO: output how many swaps were made, 
-    # this number should be less than 4n (less than 4*len(data))
-
-
-    # output all swaps
-    print(len(swaps))
-    for i, j in swaps:
-        print(i, j)
 
 
 if __name__ == "__main__":
-    main()
+    command = input("command: ").strip().upper()
+
+
+    match command:
+
+        case "I":
+            n = int(input("swaps count: "))
+            array = list(map(int, input().split()))
+
+        case "F":
+            name = input("file name: ")
+
+            assert not name.endswith(".a")
+
+            n, array = open_file(name)
+
+
+
+    assert len(array) == n
+
+    min_heap = MinHeap(array)
+    min_heap.print_swaps()
+
+    try:
+        check_answer(name,min_heap.swaps)
+    except Exception:
+        pass
